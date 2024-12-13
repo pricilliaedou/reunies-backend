@@ -6,15 +6,15 @@ const encBase64 = require("crypto-js/enc-base64");
 
 const User = require("../models/User");
 
-router.get("/activites", (req, res) => {
-  const predefinedActivities = [
-    "Informatique",
-    "Santé",
-    "Commerce",
-    "Education",
-  ];
-  res.status(200).json(predefinedActivities);
-});
+// router.get("/activites", (req, res) => {
+//   const predefinedActivities = [
+//     "Informatique",
+//     "Santé",
+//     "Commerce",
+//     "Education",
+//   ];
+//   res.status(200).json(predefinedActivities);
+// });
 
 router.get("/search", async (req, res) => {
   try {
@@ -37,35 +37,155 @@ router.get("/search", async (req, res) => {
   }
 });
 
+// router.post("/inscription", async (req, res) => {
+//   try {
+//     const {
+//       username,
+//       email,
+//       nom,
+//       prenom,
+//       password,
+//       entreprise,
+//       activite,
+//       ville,
+//       region,
+//       description,
+//       reseaux,
+//       site,
+//     } = req.body;
+
+//     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     if (!emailValid.test(email)) {
+//       return res.status(400).json({ error: "Email invalide." });
+//     }
+//     const formattedEmail = email.trim().toLowerCase();
+
+//     if (!nom || nom.trim().length < 2) {
+//       return res
+//         .status(400)
+//         .json({ error: "Le nom doit avoir au moins deux caractères" });
+//     }
+//     if (!prenom || prenom.trim().length < 2) {
+//       return res
+//         .status(400)
+//         .json({ error: "Le prénom doit avoir au moins deux caractères" });
+//     }
+
+//     const formattedNom = nom.trim();
+//     const formattedPrenom = prenom.trim();
+//     const formattedUsername = username.trim();
+
+//     const urlValid =
+//       /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})(\/[\w.-]*)*\/?$/;
+//     if (site && !urlValid.test(site.trim())) {
+//       return res
+//         .status(400)
+//         .json({ error: "L'adresse du site internet est invalide" });
+//     }
+
+//     if (!activite) {
+//       return res
+//         .status(400)
+//         .json({ error: "Veuillez sélectionner une activité" });
+//     }
+
+//     const formattedSite = site ? site.trim() : "";
+
+//     if (!username || username.trim().lenth > 12) {
+//       res.status(400).json({
+//         error: "Le nom d'utilisateur doit avoir un maximum de 12 caractères 😥",
+//       });
+//     } else {
+//       const usernameExist = await User.findOne({
+//         "account.username": username,
+//       });
+//       if (usernameExist === null) {
+//         const emailExist = await User.findOne({ email: formattedEmail });
+//         if (emailExist === null) {
+//           const token = uid2(64);
+//           const salt = uid2(16);
+//           const hash = SHA256(password + salt).toString(encBase64);
+
+//           const newUser = new User({
+//             email: formattedEmail,
+//             account: {
+//               username: formattedUsername,
+//               nom: formattedNom,
+//               prenom: formattedPrenom,
+//             },
+//             ville: ville.trim(),
+//             region: region.trim(),
+//             entreprise: entreprise.trim(),
+//             activite: activite,
+//             description: description.trim(),
+//             reseaux: reseaux.trim(),
+//             site: formattedSite,
+//             token: token,
+//             salt: salt,
+//             hash: hash,
+//           });
+//           await newUser.save();
+//           res.json({
+//             _id: newUser._id,
+//             account: newUser.account,
+//             ville: newUser.ville,
+//             region: newUser.region,
+//             entreprise: newUser.entreprise,
+//             activite: newUser.activite,
+//             description: newUser.description,
+//             reseaux: newUser.reseaux,
+//             site: newUser.site,
+//             token: newUser.token,
+//           });
+//         } else {
+//           res.status(409).json({
+//             error: "Cet email existe déjà.",
+//           });
+//         }
+//       } else {
+//         res.status(409).json({
+//           error:
+//             "Ce nom d'utilisateur existe déjà, veuillez en choisir un autre.",
+//         });
+//       }
+//     }
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// });
+
 router.post("/inscription", async (req, res) => {
   try {
     const {
-      username,
-      email,
-      nom,
-      prenom,
-      password,
-      entreprise,
-      activite,
-      ville,
-      region,
-      description,
-      reseaux,
-      site,
+      username = "",
+      email = "",
+      nom = "",
+      prenom = "",
+      password = "",
+      entreprise = "",
+      activite = "",
+      ville = "",
+      region = "",
+      description = "",
+      reseaux = "",
+      site = "",
+      commentaire = "",
     } = req.body;
+    console.log("Données reçues :", req.body);
 
+    // Validation des données
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailValid.test(email)) {
+    if (!email.trim() || !emailValid.test(email.trim())) {
       return res.status(400).json({ error: "Email invalide." });
     }
     const formattedEmail = email.trim().toLowerCase();
 
-    if (!nom || nom.trim().length < 2) {
+    if (!nom.trim() || nom.trim().length < 2) {
       return res
         .status(400)
         .json({ error: "Le nom doit avoir au moins deux caractères" });
     }
-    if (!prenom || prenom.trim().length < 2) {
+    if (!prenom.trim() || prenom.trim().length < 2) {
       return res
         .status(400)
         .json({ error: "Le prénom doit avoir au moins deux caractères" });
@@ -75,15 +195,15 @@ router.post("/inscription", async (req, res) => {
     const formattedPrenom = prenom.trim();
     const formattedUsername = username.trim();
 
-    const urlValid =
-      /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})(\/[\w.-]*)*\/?$/;
-    if (site && !urlValid.test(site.trim())) {
-      return res
-        .status(400)
-        .json({ error: "L'adresse du site internet est invalide" });
-    }
+    // const urlValid =
+    //   /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})(\/[\w.-]*)*\/?$/;
+    // if (site && !urlValid.test(site.trim())) {
+    //   return res
+    //     .status(400)
+    //     .json({ error: "L'adresse du site internet est invalide" });
+    // }
 
-    if (!activite) {
+    if (!activite.trim()) {
       return res
         .status(400)
         .json({ error: "Veuillez sélectionner une activité" });
@@ -91,64 +211,64 @@ router.post("/inscription", async (req, res) => {
 
     const formattedSite = site ? site.trim() : "";
 
-    if (!username || username.trim().lenth > 12) {
-      res.status(400).json({
-        error: "Le nom d'utilisateur doit avoir un maximum de 12 caractères 😥",
+    if (!username.trim() || username.trim().length > 12) {
+      return res.status(400).json({
+        error: "Le nom d'utilisateur doit avoir un maximum de 12 caractères.",
       });
-    } else {
-      const usernameExist = await User.findOne({
-        "account.username": username,
-      });
-      if (usernameExist === null) {
-        const emailExist = await User.findOne({ email: formattedEmail });
-        if (emailExist === null) {
-          const token = uid2(64);
-          const salt = uid2(16);
-          const hash = SHA256(password + salt).toString(encBase64);
-
-          const newUser = new User({
-            email: formattedEmail,
-            account: {
-              username: formattedUsername,
-              nom: formattedNom,
-              prenom: formattedPrenom,
-            },
-            ville: ville.trim(),
-            region: region.trim(),
-            entreprise: entreprise.trim(),
-            activite: activite,
-            description: description.trim(),
-            reseaux: reseaux.trim(),
-            site: formattedSite,
-            token: token,
-            salt: salt,
-            hash: hash,
-          });
-          await newUser.save();
-          res.json({
-            _id: newUser._id,
-            account: newUser.account,
-            ville: newUser.ville,
-            region: newUser.region,
-            entreprise: newUser.entreprise,
-            activite: newUser.activite,
-            description: newUser.description,
-            reseaux: newUser.reseaux,
-            site: newUser.site,
-            token: newUser.token,
-          });
-        } else {
-          res.status(409).json({
-            error: "Cet email existe déjà.",
-          });
-        }
-      } else {
-        res.status(409).json({
-          error:
-            "Ce nom d'utilisateur existe déjà, veuillez en choisir un autre.",
-        });
-      }
     }
+
+    const usernameExist = await User.findOne({ "account.username": username });
+    if (usernameExist) {
+      console.log("Conflit : Nom d'utilisateur déjà existant", username);
+      return res.status(409).json({
+        error:
+          "Ce nom d'utilisateur existe déjà, veuillez en choisir un autre.",
+      });
+    }
+
+    const emailExist = await User.findOne({ email: formattedEmail });
+    if (emailExist) {
+      console.log("Conflit : Email déjà existant", formattedEmail);
+      return res.status(409).json({ error: "Cet email existe déjà." });
+    }
+
+    const token = uid2(64);
+    const salt = uid2(16);
+    const hash = SHA256(password + salt).toString(encBase64);
+
+    const newUser = new User({
+      email: formattedEmail,
+      account: {
+        username: formattedUsername,
+        nom: formattedNom,
+        prenom: formattedPrenom,
+      },
+      ville: ville.trim(),
+      region: region.trim(),
+      entreprise: entreprise.trim(),
+      activite: activite,
+      description: description.trim(),
+      reseaux: reseaux.trim(),
+      site: formattedSite,
+      commentaire: commentaire.trim(),
+      token: token,
+      salt: salt,
+      hash: hash,
+    });
+
+    await newUser.save();
+    res.json({
+      _id: newUser._id,
+      account: newUser.account,
+      ville: newUser.ville,
+      region: newUser.region,
+      entreprise: newUser.entreprise,
+      activite: newUser.activite,
+      description: newUser.description,
+      reseaux: newUser.reseaux,
+      site: newUser.site,
+      token: newUser.token,
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -186,6 +306,7 @@ router.post("/connexion", async (req, res) => {
       });
     }
   } catch (error) {
+    console.error("Erreur sur /inscription :", error.message);
     res.status(400).json({ error: error.message });
   }
 });
