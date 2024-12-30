@@ -6,20 +6,11 @@ const encBase64 = require("crypto-js/enc-base64");
 
 const User = require("../models/User");
 
-// router.get("/activites", (req, res) => {
-//   const predefinedActivities = [
-//     "Informatique",
-//     "Santé",
-//     "Commerce",
-//     "Education",
-//   ];
-//   res.status(200).json(predefinedActivities);
-// });
-
 router.get("/search", async (req, res) => {
   try {
-    const { activite, region, ville } = req.body;
+    const { activite, region, ville } = req.query;
     const filters = {};
+
     if (activite) {
       filters.activite = activite;
     }
@@ -36,6 +27,28 @@ router.get("/search", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+// router.get("/search", async (req, res) => {
+//   try {
+//     const { activite, region, ville } = req.query;
+//     const filters = {};
+
+//     if (activite) {
+//       filters.activite = activite;
+//     }
+//     if (region) {
+//       filters.region = region;
+//     }
+//     if (ville) {
+//       filters.ville = new RegExp(ville, "i");
+//     }
+
+//     const results = await User.find(filters);
+//     res.status(200).json(results);
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// });
 
 // router.post("/inscription", async (req, res) => {
 //   try {
